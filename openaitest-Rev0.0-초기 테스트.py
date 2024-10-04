@@ -5,12 +5,12 @@ import gradio as gr
 from openai import AzureOpenAI
 
 
-endpoint = "https://eueastproject3-team2.openai.azure.com/"
-deployment = "project3-team2-gpt-4o"
-search_endpoint = "https://eastus2project3-team2.search.windows.net"
-search_key = "BCF0jnvoev0WrgDgq2UjZ5FPWQdeTjH8JwUgmlszBDAzSeBgrjOv"
-search_index = "hanseoyun"
-subscription_key = "a83ed49c38b54298bb690a721a87599b"
+# endpoint = "https://eueastproject3-team2.openai.azure.com/"
+# deployment = "project3-team2-gpt-4o"
+# search_endpoint = "https://eastus2project3-team2.search.windows.net"
+# search_key = "BCF0jnvoev0WrgDgq2UjZ5FPWQdeTjH8JwUgmlszBDAzSeBgrjOv"
+# search_index = "hanseoyun"
+# subscription_key = "a83ed49c38b54298bb690a721a87599b"
 
 # Initialize Azure OpenAI client with key-based authentication
 client = AzureOpenAI(
@@ -65,8 +65,3 @@ content_value = completion_dict["choices"][0]["message"]["content"]
 
 # content 값 출력
 print(content_value)
-
-
-
-
-
