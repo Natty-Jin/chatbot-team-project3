@@ -2,12 +2,12 @@ import gradio as gr
 from openai import AzureOpenAI
 
 # Azure OpenAI 설정
-# endpoint = "https://eueastproject3-team2.openai.azure.com/"
-# deployment = "project3-team2-gpt-4o"
-# search_endpoint = "https://eastus2project3-team2.search.windows.net"
-# search_key = "BCF0jnvoev0WrgDgq2UjZ5FPWQdeTjH8JwUgmlszBDAzSeBgrjOv"
-# search_index = "hanseoyun"
-# subscription_key = "a83ed49c38b54298bb690a721a87599b"  # 채팅 플레이 그라운드에서 코드 보기 누르고 최하단의 API키 복사 붙여넣기
+endpoint = "https://eueastproject3-team2.openai.azure.com/"
+deployment = "project3-team2-gpt-4o"
+search_endpoint = "https://eastus2project3-team2.search.windows.net"
+search_key = "BCF0jnvoev0WrgDgq2UjZ5FPWQdeTjH8JwUgmlszBDAzSeBgrjOv"
+search_index = "hanseoyun"
+subscription_key = "a83ed49c38b54298bb690a721a87599b"  # 채팅 플레이 그라운드에서 코드 보기 누르고 최하단의 API키 복사 붙여넣기
 
 # Initialize Azure OpenAI client with key-based authentication
 client = AzureOpenAI(
