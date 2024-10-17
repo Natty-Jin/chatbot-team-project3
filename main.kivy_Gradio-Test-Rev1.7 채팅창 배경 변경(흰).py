@@ -16,6 +16,11 @@ import docx
 import PyPDF2
 import json
 import datetime
+from kivy.uix.floatlayout import FloatLayout
+from kivy.graphics import Color, Rectangle
+from kivy.core.window import Window
+from kivy.uix.screenmanager import ScreenManager, FadeTransition
+from kivy.uix.boxlayout import BoxLayout
 
 
 # Azure OpenAI 설정
@@ -136,19 +141,30 @@ def get_openai_response(message, char_name, grounding_data, callback):
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
+        
+        # Set the background to white as early as possible
+        with self.canvas.before:
+            Color(1, 1, 1, 1)  # 흰색 배경 설정
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        
+        # Make sure to bind size and position as soon as possible
+        self.bind(size=self._update_rect, pos=self._update_rect)
+
+        # 나머지 레이아웃 및 위젯 초기화
         main_layout = BoxLayout(orientation="horizontal")
 
         char_select_layout = BoxLayout(orientation="vertical", size_hint=(0.3, 1))
 
         group_layout = BoxLayout(orientation="horizontal", size_hint_y=0.1)
         group_label = Label(
-            text="Eruza", font_name="NanumGothic", size_hint_x=0.3, font_size="20sp"
+            text="Eruza", font_name="NanumGothic", size_hint_x=0.3, font_size="20sp", color=(0, 0, 0, 1)  # 검은색 텍스트
         )
         group_message = Label(
             text="안녕 우린 Eruza야",
             font_name="NanumGothic",
             size_hint_x=0.7,
             font_size="20sp",
+            color=(0, 0, 0, 1)  # 검은색 텍스트
         )
         group_layout.add_widget(group_label)
         group_layout.add_widget(group_message)
@@ -163,9 +179,10 @@ class MainScreen(Screen):
                 last_message = conversation[-1]
                 last_time = last_message.split("): ")[0]  # 시간 부분을 추출
                 last_message_preview = (
-                    last_message[len(last_time) + 3:][:30] + "..."  # 시간 부분 제외하고 내용만 30자 제한
+                    last_message[len(last_time) + 3 :][:30]
+                    + "..."  # 시간 부분 제외하고 내용만 30자 제한
                     if len(last_message) > len(last_time) + 3 + 20
-                    else last_message[len(last_time) + 3:]
+                    else last_message[len(last_time) + 3 :]
                 )
                 display_text = f"{last_time}\n{last_message_preview}"
             else:
@@ -173,11 +190,9 @@ class MainScreen(Screen):
 
             # 버튼에 내용을 설정
             char_button_layout = BoxLayout(
-                orientation="horizontal", size_hint_y=None, height=80
+                orientation="horizontal", size_hint_y=0.05, height=80
             )
-            btn_icon = Image(
-                source=f"Icon-data/{char_name}.png", size_hint_x=0.3
-            )
+            btn_icon = Image(source=f"Icon-data/{char_name}.png", size_hint_x=0.2)
             btn_text = Button(
                 text=display_text,
                 font_name="NanumGothic",
@@ -198,6 +213,10 @@ class MainScreen(Screen):
         main_layout.add_widget(char_select_layout)
         self.add_widget(main_layout)
 
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
     def switch_to_profile(self, char_name):
         profile_screen = self.manager.get_screen("profile")
         profile_screen.update_character(char_name)
@@ -211,6 +230,12 @@ class ProfileScreen(Screen):
         super(ProfileScreen, self).__init__(**kwargs)
         self.current_character = None
 
+        # Set the background to white
+        with self.canvas.before:
+            Color(1, 1, 1, 1)  # 흰색 배경 설정
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size=self._update_rect, pos=self._update_rect)
+
         layout = BoxLayout(orientation="vertical")
 
         # 상단 뒤로가기 버튼 추가
@@ -220,12 +245,13 @@ class ProfileScreen(Screen):
         )
         back_button.bind(on_press=self.go_back)
         self.character_label = Label(
-            text="",  # 상단 캐릭터 프로필 제목 제거
+            text="",
             size_hint=(0.9, 1),
             font_size="24sp",
             font_name="NanumGothic",
             halign="center",
             valign="middle",
+            color=(0, 0, 0, 1)  # 글자색을 검정색으로 설정
         )
 
         back_layout.add_widget(back_button)
@@ -233,39 +259,59 @@ class ProfileScreen(Screen):
         layout.add_widget(back_layout)
 
         # 캐릭터 프로필 이미지와 이름
-        self.profile_image_layout = BoxLayout(orientation="vertical", size_hint=(1, 0.7))
+        self.profile_image_layout = BoxLayout(
+            orientation="vertical", size_hint=(1, 0.7)
+        )
         self.profile_image = Image(size_hint=(1, 0.8))
-        self.profile_name = Label(font_name="NanumGothic", font_size="24sp", size_hint=(1, 0.2), halign="center")
+        self.profile_name = Label(
+            font_name="NanumGothic",
+            font_size="24sp",
+            size_hint=(1, 0.2),
+            halign="center",
+            color=(0, 0, 0, 1)  # 글자색을 검정색으로 설정
+        )
         self.profile_image_layout.add_widget(self.profile_image)
         self.profile_image_layout.add_widget(self.profile_name)
         layout.add_widget(self.profile_image_layout)
 
         # 대화하기 버튼
         self.chat_button = Button(
-            text="대화하기", size_hint=(0.5, 0.1), font_name="NanumGothic", font_size="20sp"
+            text="대화하기",
+            size_hint=(0.5, 0.1),
+            font_name="NanumGothic",
+            font_size="20sp",
         )
         self.chat_button.pos_hint = {"center_x": 0.5}
         self.chat_button.bind(on_press=self.start_chat)
         layout.add_widget(self.chat_button)
 
         self.add_widget(layout)
+        
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def update_character(self, char_name):
         self.current_character = char_name
-        self.profile_image.source = f"Icon-data/{char_name}.png"  # 실제 이미지 파일 경로로 대체 필요
+        self.profile_image.source = (
+            f"Icon-data/{char_name}.png"  # 실제 이미지 파일 경로로 대체 필요
+        )
         self.profile_name.text = f"{char_name}"
 
     def save_chat_history(self):
         chat_screen = self.manager.get_screen("chat")
         if self.current_character in chat_screen.chat_history:
-            save_conversation(self.current_character, chat_screen.chat_history[self.current_character])
+            save_conversation(
+                self.current_character, chat_screen.chat_history[self.current_character]
+            )
 
-    def start_chat(self, instance):
+    def start_chat(self, _instance):
         chat_screen = self.manager.get_screen("chat")
         chat_screen.update_character(self.current_character)
+        chat_screen.text_input.focus = True  # 입력창에 자동 포커스 설정
         self.manager.current = "chat"
 
-    def go_back(self, instance):
+    def go_back(self, _instance):
         self.save_chat_history()  # 뒤로가기 전에 대화 기록을 저장하도록 수정
         self.manager.current = "main"
 
@@ -278,7 +324,15 @@ class ChatScreen(Screen):
         self.current_character = None
         self.grounding_data = load_grounding_data("grounding-data")
 
-        chat_layout = BoxLayout(orientation="vertical")
+        # FloatLayout으로 변경하여 배경을 설정할 수 있도록 함
+        layout = FloatLayout()
+
+        with layout.canvas.before:
+            Color(1, 1, 1, 1)  # 흰색 배경 설정
+            self.rect = Rectangle(size=layout.size, pos=layout.pos)
+        layout.bind(size=self._update_rect, pos=self._update_rect)
+
+        chat_layout = BoxLayout(orientation="vertical", size_hint=(1, 1))
 
         top_layout = BoxLayout(orientation="horizontal", size_hint_y=0.1)
         back_button = Button(
@@ -292,6 +346,7 @@ class ChatScreen(Screen):
             font_name="NanumGothic",
             halign="center",
             valign="middle",
+            color=(0, 0, 0, 1),  # 글자색을 검정색으로 설정
         )
 
         top_layout.add_widget(back_button)
@@ -308,26 +363,45 @@ class ChatScreen(Screen):
 
         input_layout = BoxLayout(size_hint=(1, 0.1))
         self.text_input = TextInput(
-            hint_text="메시지를 입력하세요...", multiline=True, font_name="NanumGothic", size_hint_x=0.8, input_type="text"
+            hint_text="메시지를 입력하세요...",
+            multiline=True,
+            font_name="NanumGothic",
+            size_hint_x=0.8,
+            input_type="text",
+            background_color=(1, 1, 1, 1),  # 입력창 배경을 하얀색으로 설정
+            foreground_color=(0, 0, 0, 1),  # 입력 텍스트를 검정색으로 설정
+            hint_text_color=(0.5, 0.5, 0.5, 1),  # 힌트 텍스트를 회색으로 설정
+            write_tab=False  # Tab 키를 눌러도 입력창에서 커서가 유지되도록 함
+            
         )
-        self.text_input.input_filter = lambda text, from_undo: text if text.isalnum() or text.isspace() else None  # 한국어 키보드 기본 적용
         Window.bind(on_key_down=self._on_key_down)
+        
+        # 항상 입력창에 포커스 유지
         send_button = Button(text="전송", size_hint=(0.2, 1), font_name="NanumGothic")
         send_button.bind(on_press=self.send_message)
         input_layout.add_widget(self.text_input)
         input_layout.add_widget(send_button)
         chat_layout.add_widget(input_layout)
 
-        self.add_widget(chat_layout)
+        layout.add_widget(chat_layout)
+        self.add_widget(layout)
 
-    def _on_key_down(self, window, key, scancode, codepoint, modifiers):
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
+    def _on_key_down(self, _window, key, _scancode, _codepoint, modifiers):
         if key == 13:  # Enter key
-            if 'shift' in modifiers:
+            if "shift" in modifiers or "ctrl" in modifiers:
+                # Shift 또는 Ctrl + Enter -> 줄바꿈 추가
                 self.text_input.text += "\n"
             else:
-                self.send_message(None)
+                # Enter만 눌렀을 때 -> 메시지 전송
+                if not hasattr(self, 'waiting_for_response') or not self.waiting_for_response:
+                    self.send_message(None)
             return True
         return False
+
 
     def update_character(self, char_name):
         self.character_label.text = char_name
@@ -340,16 +414,25 @@ class ChatScreen(Screen):
 
         for message in conversation:
             # 메시지 길이가 40자를 초과할 경우 줄바꿈 추가
-            formatted_message = "\n".join([message[i:i + 50] for i in range(0, len(message), 50)])
+            formatted_message = "\n".join(
+                [message[i : i + 50] for i in range(0, len(message), 50)]
+            )
             # 메시지의 발신자를 식별하여 정렬 위치를 지정
             if message.startswith("나"):
-                self.add_message(formatted_message.replace("\\n", "\n"), align="right", icon_source=f"Icon-data/{char_name}.png")
+                self.add_message(
+                    formatted_message.replace("\n", "\n"),
+                    align="right",
+                    icon_source=f"Icon-data/{char_name}.png",
+                )
             else:
-                self.add_message(formatted_message.replace("\\n", "\n"), align="left", icon_source=f"Icon-data/{char_name}.png")
+                self.add_message(
+                    formatted_message.replace("\n", "\n"),
+                    align="left",
+                    icon_source=f"Icon-data/{char_name}.png",
+                )
 
         # 지난 대화 기록 구분선을 추가
         self.add_separator("지난 대화 기록")
-
 
     def add_separator(self, text):
         separator_layout = BoxLayout(
@@ -362,7 +445,8 @@ class ChatScreen(Screen):
             font_size="18sp",
             halign="center",
             valign="middle",
-            color=(1, 1, 1, 0.8),  # 회색으로 표시
+            color=(0, 0, 0, 0.9),  # 검은색으로 표시
+            # color=(1, 1, 1, 0.8),  # 회색으로 표시
             text_size=(self.width, None),  # 텍스트가 중앙 정렬되도록 너비를 지정
         )
         separator_layout.add_widget(separator_label)
@@ -375,19 +459,30 @@ class ChatScreen(Screen):
         profile_screen.save_chat_history()  # 대화 기록 저장 추가
         self.manager.current = "profile"
 
-    def send_message(self, _instance):
+    def send_message(self, _instance): 
+        if hasattr(self, 'waiting_for_response') and self.waiting_for_response: # 챗봇 응답 기다리게 하기 추가함
+            return
+        self.waiting_for_response = True
         user_message = self.text_input.text
         if user_message:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
-            self.add_message(f"나 ({timestamp}): \n {user_message}", align="right", icon_source=f"Icon-data/{self.current_character}.png")
+            self.add_message(
+                f"나 ({timestamp}): \n {user_message}",
+                align="right",
+                icon_source=f"Icon-data/{self.current_character}.png",
+            )
 
             # 대화 기록에 추가
             if self.current_character not in self.chat_history:
                 self.chat_history[self.current_character] = []
-            self.chat_history[self.current_character].append(f"나 ({timestamp}): \n {user_message}")
+            self.chat_history[self.current_character].append(
+                f"나 ({timestamp}): \n {user_message}"
+            )
 
             # 대화 기록 저장
-            save_conversation(self.current_character, self.chat_history[self.current_character])
+            save_conversation(
+                self.current_character, self.chat_history[self.current_character]
+            )
 
             self.text_input.text = ""
             self.text_input.focus = True
@@ -396,26 +491,41 @@ class ChatScreen(Screen):
             grounding_data = self.grounding_data.get(self.current_character, "")
             threading.Thread(
                 target=get_openai_response,
-                args=(user_message, self.current_character, grounding_data, self.receive_message),
+                args=(
+                    user_message,
+                    self.current_character,
+                    grounding_data,
+                    self.receive_message,
+                ),
             ).start()
 
     def receive_message(self, bot_message):
+        self.waiting_for_response = False   #챗봇이 응답할 때까지 사용자 질문 못하게 막았음
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
-        self.add_message(f"{self.current_character} ({timestamp}): \n {bot_message}", align="left", icon_source=f"Icon-data/{self.current_character}.png")
-        self.chat_history[self.current_character].append(f"{self.current_character} ({timestamp}): \n {bot_message}")
+        self.add_message(
+            f"{self.current_character} ({timestamp}): \n {bot_message}",
+            align="left",
+            icon_source=f"Icon-data/{self.current_character}.png",
+        )
+        self.chat_history[self.current_character].append(
+            f"{self.current_character} ({timestamp}): \n {bot_message}"
+        )
 
         # 대화 기록 저장
-        save_conversation(self.current_character, self.chat_history[self.current_character])
+        save_conversation(
+            self.current_character, self.chat_history[self.current_character]
+        )
 
     def add_message(self, message, align="left", icon_source=None):
         message_layout = BoxLayout(
             orientation="horizontal", size_hint_y=None, padding=(10, 10, 10, 10)
         )
 
-        icon = None
         if icon_source:
+            # 매번 새로운 Image 객체 생성
             icon = Image(source=icon_source, size_hint=(0.1, None), height=40)
-            message_layout.add_widget(icon) if align == "left" else None
+            if align == "left":
+                message_layout.add_widget(icon)
 
         label = Label(
             text=message,
@@ -424,14 +534,13 @@ class ChatScreen(Screen):
             halign=align,
             valign="middle",
             text_size=(self.width * 0.7, None),
+            color=(0, 0, 0, 1),  # 글자색을 검정색으로 설정
         )
 
         label.bind(texture_size=label.setter("size"))
         label.bind(size=self._update_message_height)
 
         if align == "left":
-            if icon:
-                message_layout.add_widget(icon)
             message_layout.add_widget(label)
             message_layout.add_widget(Label(size_hint_x=0.2))
         else:
@@ -461,17 +570,42 @@ def save_test_conversation(persona, initial_messages):
 
 
 # 시작 전에 대화 기록을 테스트용으로 저장 (나중에 제거 가능)
-save_test_conversation("Wynter", ["안녕하세요 ~ Wynter입니다! 오늘 기분은 어때요?", "전 항상 에너지가 넘쳐요!"])
-save_test_conversation("Erika", ["안녕하세요 ~ Erika 입니다! 오늘도 행복한 하루 보내고 있나요?", "전 독서를 좋아해요."])
-save_test_conversation("Min", ["안녕하세요 Min입니더! 오늘은 어떤 모험이 기다리고 있을까예?", "전 음악을 듣는 걸 좋아해요."])
-save_test_conversation("J.K", ["Hey yo J.K입니다! 오늘은 뭐하고 계신가yo?", "I'm AI에 관심이 많아yo."])
-save_test_conversation("Luis", ["안녕하세요! 오늘도 밝은 하루가 되길 바라요.", "별을 관찰하는 것을 좋아해요."])
-save_test_conversation("NEXA", ["안녕하세요! 오늘도 멋진 하루 보내세요!", "저는 리그오브레전드 대회 보는 걸 좋아해요!!"])
-
+save_test_conversation(
+    "Wynter",
+    ["안녕하세요 ~ Wynter입니다! 오늘 기분은 어때요?", "전 항상 에너지가 넘쳐요!"],
+)
+save_test_conversation(
+    "Erika",
+    [
+        "안녕하세요 ~ Erika 입니다! 오늘도 행복한 하루 보내고 있나요?",
+        "전 독서를 좋아해요.",
+    ],
+)
+save_test_conversation(
+    "Min",
+    [
+        "안녕하세요 Min입니더! 오늘은 어떤 모험이 기다리고 있을까예?",
+        "전 음악을 듣는 걸 좋아해요.",
+    ],
+)
+save_test_conversation(
+    "J.K", ["Hey yo J.K입니다! 오늘은 뭐하고 계신가yo?", "I'm AI에 관심이 많아yo."]
+)
+save_test_conversation(
+    "Luis",
+    ["안녕하세요! 오늘도 밝은 하루가 되길 바라요.", "별을 관찰하는 것을 좋아해요."],
+)
+save_test_conversation(
+    "NEXA",
+    [
+        "안녕하세요! 오늘도 멋진 하루 보내세요!",
+        "저는 리그오브레전드 대회 보는 걸 좋아해요!!",
+    ],
+)
 
 class TestApp(App):
     def build(self):
-        sm = ScreenManager()
+        sm = ScreenManager(transition=FadeTransition(duration=0.3))  # 페이드 전환 애니메이션 적용 스크린 전환 애니메이션 적용 - 자연스러움 추가
         main_screen = MainScreen(name="main")
         profile_screen = ProfileScreen(name="profile")
         chat_screen = ChatScreen(name="chat")
@@ -481,5 +615,8 @@ class TestApp(App):
         return sm
 
 
+
 if __name__ == "__main__":
     TestApp().run()
+    
+    
