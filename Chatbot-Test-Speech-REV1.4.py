@@ -21,6 +21,7 @@ import PyPDF2
 import sys
 import uuid
 import docx
+from kivy.uix.slider import Slider 
 
 # API KEY를 환경변수로 관리하기 위한 설정 파일
 from dotenv import load_dotenv
@@ -28,41 +29,37 @@ from dotenv import load_dotenv
 # API KEY 정보로드
 load_dotenv()
 
-endpoint = os.getenv('AZURE_OPEN_AI_END_POINT')
-deployment = os.getenv('AZURE_OPEN_AI_API_KEY')
-subscription_key = os.getenv('AZURE_OPEN_AI_DEPLOYMENT_NAME')
+endpoint = os.getenv("AZURE_OPEN_AI_END_POINT")
+deployment = os.getenv("AZURE_OPEN_AI_API_KEY")
+subscription_key = os.getenv("AZURE_OPEN_AI_DEPLOYMENT_NAME")
 
 # Azure Speech API 설정
-SPEECH_ENDPOINT = os.getenv(
-    "SPEECH_ENDPOINT", "https://westus2.api.cognitive.microsoft.com"
-)
+SPEECH_ENDPOINT = "https://westus2.api.cognitive.microsoft.com"
 API_VERSION = "2024-04-15-preview"
-SUBSCRIPTION_KEY = os.getenv("SUBSCRIPTION_KEY", "1ff2d7a7379b4e349aa1734718de89fc")
+SUBSCRIPTION_KEY = "1ff2d7a7379b4e349aa1734718de89fc"
 
 
 # Azure Speech API를 통한 음성 합성 요청 함수
-def submit_synthesis(user_message, callback):
+def submit_synthesis(bot_message, callback):
     try:
-        job_id = str(uuid.uuid4())
+        job_id = str(uuid.uuid4())  # 유니크한 Job ID 생성
         url = f"{SPEECH_ENDPOINT}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
         headers = {
-            "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,
+            "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,  # 인증 키 확인
             "Content-Type": "application/json",
         }
 
+        # SSML 형식으로 음성 합성 요청을 구성
         payload = {
-            "synthesisConfig": {
-                "voice": "en-US-JennyMultilingualNeural",
-            },
-            "inputKind": "plainText",
+            "inputKind": "SSML",
             "inputs": [
                 {
-                    "content": user_message,
-                },
+                    "content": f"<speak version='1.0' xml:lang='ko-KR'><voice name='ko-KR-YuJinNeural'>{bot_message}</voice></speak>"
+                }
             ],
             "avatarConfig": {
-                "customized": False,
-                "talkingAvatarCharacter": "Lisa",
+                "talkingAvatarCharacter": "lisa",
+                "talkingAvatarStyle": "graceful-sitting",
                 "videoFormat": "mp4",
                 "videoCodec": "h264",
                 "subtitleType": "soft_embedded",
@@ -77,18 +74,16 @@ def submit_synthesis(user_message, callback):
         else:
             Clock.schedule_once(
                 lambda dt: callback(
-                    f"Error: {response.status_code} - Unable to submit synthesis job."
+                    f"Error: {response.status_code} - Unable to submit synthesis job. Check API key and endpoint."
                 ),
                 0,
             )
-    except Exception as ex:  # 예외가 발생한 경우에만 'ex' 변수를 사용합니다
-        Clock.schedule_once(
-            lambda dt: callback(f"Error: {str(ex)}"), 0
-        )  # 예외 발생 시 'ex' 사용
+    except Exception as ex:
+        Clock.schedule_once(lambda dt: callback(f"Error: {str(ex)}"), 0)  # 예외 발생 시 'ex' 사용
 
 
 # 음성 합성 결과 조회 함수
-def get_synthesis(job_id, callback):
+def get_synthesis(job_id, callback, retries=5, delay=15):
     try:
         url = f"{SPEECH_ENDPOINT}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
         headers = {"Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY}
@@ -97,21 +92,36 @@ def get_synthesis(job_id, callback):
         if response.status_code < 400:
             status = response.json().get("status")
             if status == "Succeeded":
-                video_url = response.json()["outputs"].get("result")  # 동영상 URL 추출
+                video_url = response.json()["outputs"].get("result")
                 if video_url:
                     Clock.schedule_once(lambda dt: callback(video_url), 0)
                 else:
                     Clock.schedule_once(
                         lambda dt: callback("Error: No video URL found"), 0
                     )
+            elif status in ["NotStarted", "InProgress"]:
+                if retries > 0:
+                    Clock.schedule_once(
+                        lambda dt: get_synthesis(job_id, callback, retries - 1, delay),
+                        delay,
+                    )
+                else:
+                    Clock.schedule_once(
+                        lambda dt: callback(
+                            f"Error fetching video: Status {status}, retries exhausted"
+                        ),
+                        0,
+                    )
             else:
-                Clock.schedule_once(lambda dt: callback(f"Status: {status}"), 0)
+                Clock.schedule_once(
+                    lambda dt: callback(f"Error fetching video: Status {status}"), 0
+                )
         else:
             Clock.schedule_once(
                 lambda dt: callback(f"Error: {response.status_code}"), 0
             )
-    except Exception as ex:  # 'ex'로 예외 변수 지정
-        Clock.schedule_once(lambda dt: callback(f"Error: {str(ex)}"), 0)  # 'ex' 사용
+    except Exception as ex:
+        Clock.schedule_once(lambda dt: callback(f"Error: {str(ex)}"), 0)
 
 
 # ******************************* 여기부터는 CS 챗봇 관련 *************************************
@@ -181,11 +191,13 @@ def get_openai_response(message, grounding_data, callback):
     }
 
     system_message = f"""
-    너는 고객 지원 챗봇 nepoiA야. 고객의 질문에 친절하고 명확하게 응답해줘야 해.
-    전문적인 톤으로 응답하고, 사용자의 질문에 대해 최대 3문장으로 답변해줘. 이모지 절대 쓰지마
-    처음대화를 제외하고 안녕하세요!!멘트를 쓰지마세요, 답변 끝에는 감사합니다!!를 써줘
+    너는 고객 지원 챗봇 nepoiA야. 고객의 질문에 친절하고 명확하게 응답해줘야 해줘요.
+    전문적인 톤으로 응답하고, 이모지 절대 쓰지마세요
+    처음대화를 제외하고 안녕하세요!!멘트를 쓰지마세요, 답변 끝에는 감사합니다!!를 써줘요
     \n줄바꿈은 {grounding_data}에서 사용자 질문이 달라질 때마다 사용해주세요.
     유저 질문에 대한 답변은 이와 같습니다: {grounding_data}에 맞는 답변을 해주세요
+    챗봇의 답변은 반드시 간략하게 핵심만 설명해주세요. 2문장을 넘기지 말아주세요!!!!!!!!!
+    당신은 다국어가 무조건 가능한 챗봇입니다. 사용자가 외국인일 경우에 그에 맞는 답변을 주시면 감사할 것 같습니다.
     """
 
     data = {
@@ -193,7 +205,7 @@ def get_openai_response(message, grounding_data, callback):
             {"role": "system", "content": system_message},
             {"role": "user", "content": message},
         ],
-        "max_tokens": 4000,
+        "max_tokens": 1500,
         "temperature": 0.7,
         "top_p": 0.75,
         "frequency_penalty": 0,
@@ -232,6 +244,7 @@ def get_openai_response(message, grounding_data, callback):
 class CSChatScreen(Screen):
     def __init__(self, **kwargs):
         super(CSChatScreen, self).__init__(**kwargs)
+
         # Grounding 데이터를 불러옴
         self.grounding_data = load_grounding_data_as_text("Chatbotgrounding-data")
 
@@ -300,6 +313,14 @@ class CSChatScreen(Screen):
         layout.add_widget(chat_layout)
         self.add_widget(layout)
 
+        # 초기 메시지 추가는 message_layout 초기화 후에 수행
+        self.add_message(
+            """안녕하세요! nepoiA 여러분!! 무엇을 도와드릴까요?? .....^ O ^......\n *질문 예시*: 비밀번호를 잊어버렸어요... 해킹당한 것 같아요 등등 \n *질문 예시*: QR코드가 인식되지 않습니다. 해결방법이 있나요?\n *질문 예시*: 보안은 어디서 재설정하나요?
+            """,
+            align="left",
+            icon_source="chatbot-icon/nepoiA.png",
+        )
+
     # _update_rect 메서드 추가
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
@@ -323,6 +344,7 @@ class CSChatScreen(Screen):
     def go_back(self, _instance):
         sys.exit()  # 프로그램을 종료
 
+    # send_message에 GPT 요청 추가
     def send_message(self, _instance):
         if hasattr(self, "waiting_for_response") and self.waiting_for_response:
             return
@@ -340,30 +362,102 @@ class CSChatScreen(Screen):
                 args=(user_message, self.grounding_data, self.receive_message),
             ).start()
 
-    # *************** Speech *********************
-    def receive_message(self, bot_message, job_id=None):
+    # receive_message에서 음성 합성 요청
+    def receive_message(self, bot_message):
         self.waiting_for_response = False
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
+        self.add_message(
+            f"nepoiA ({timestamp}):\n{bot_message}",
+            align="left",
+            icon_source="chatbot-icon/nepoiA.png",
+        )
+
+        # 챗봇의 응답을 사용하여 음성 합성 요청
+        threading.Thread(
+            target=submit_synthesis,
+            args=(bot_message, self.receive_synthesis_job_id),
+        ).start()
+
+    # 합성 작업 후 job_id를 받아오는 함수
+    def receive_synthesis_job_id(self, job_id):
         if job_id:
-            # 음성 합성 결과를 얻어온 후 웹뷰로 동영상 출력
-            get_synthesis(job_id, self.display_video)
-        else:
-            # job_id가 없을 때는 텍스트 메시지 처리
-            self.add_message(
-                f"nepoiA ({timestamp}):\n{bot_message}",
-                align="left",
-                icon_source="chatbot-icon/nepoiA.png",
-            )
+            threading.Thread(
+                target=get_synthesis, args=(job_id, self.display_video)
+            ).start()
 
     def display_video(self, video_url):
-        # Kivy의 Video 위젯을 사용하여 동영상을 표시하는 팝업
         if video_url.startswith("http"):
             video = Video(source=video_url)
-            popup = Popup(
-                title="Synthesized Video", content=video, size_hint=(0.8, 0.8)
+
+            # 레이아웃 생성
+            layout = BoxLayout(orientation="vertical")
+
+            # 상단에 NepoiA CS 챗봇이라는 제목 추가 (폰트 적용)
+            title_label = Label(
+                text="NepoiA CS 챗봇입니다.",
+                font_name=myfont,  # 폰트 적용
+                font_size="20sp",
+                size_hint_y=None,
+                height=50,
+                halign="center",
+                valign="middle",
+                color=(1, 1, 1, 1),
             )
-            video.state = "play"  # 비디오 재생
+            layout.add_widget(title_label)
+
+            layout.add_widget(video)
+
+            # 컨트롤 버튼 레이아웃
+            controls_layout = BoxLayout(size_hint=(1, 0.1), padding=(10, 10, 10, 10))
+
+            # 멈춤/재생 버튼
+            play_pause_button = Button(
+                text="멈춤", size_hint=(0.3, 1), font_name=myfont
+            )
+
+            def toggle_play_pause(instance):
+                if video.state == "play":
+                    video.state = "pause"
+                    play_pause_button.text = "재생"
+                else:
+                    video.state = "play"
+                    play_pause_button.text = "멈춤"
+
+            play_pause_button.bind(on_press=toggle_play_pause)
+            controls_layout.add_widget(play_pause_button)
+
+            # 음량 조절 슬라이더
+            volume_slider = Slider(min=0, max=1, value=video.volume, size_hint=(0.6, 1))
+            volume_slider.bind(
+                value=lambda instance, value: setattr(video, "volume", value)
+            )
+            controls_layout.add_widget(volume_slider)
+
+            # 닫기 버튼
+            close_button = Button(text="닫기", size_hint=(0.1, 1), font_name=myfont)
+
+            def close_popup(instance):
+                video.state = "stop"
+                popup.dismiss()
+
+            close_button.bind(on_press=close_popup)
+            controls_layout.add_widget(close_button)
+
+            layout.add_widget(controls_layout)
+
+            # 팝업 제목 설정 (본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다)
+            popup = Popup(
+                title="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다",
+                content=layout,
+                title_align="center",  # 중앙 정렬
+                title_font=myfont,  # 기본 폰트 적용
+                size_hint=(0.8, 0.8),
+            )
             popup.open()
+
+            # 팝업이 열리면 자동으로 재생 시작
+            video.state = "play"
+
         else:
             self.add_message(f"Error fetching video: {video_url}", align="left")
 
@@ -383,13 +477,13 @@ class CSChatScreen(Screen):
             size_hint_y=None,
             font_name=myfont,
             halign=align,
-            valign="middle",
-            text_size=(self.width * 0.7, None),
+            valign="bottom",
+            text_size=(self.width * 0.7, None),  # 이 부분을 수정
             color=(0, 0, 0, 1),
         )
 
-        label.bind(texture_size=label.setter("size"))
-        label.bind(size=self._update_message_height)
+        # 추가로 텍스트 크기를 세로로 제한하고 텍스트 정렬을 적용합니다
+        label.bind(size=lambda inst, value: setattr(inst, "text_size", value))
 
         if align == "left":
             message_layout.add_widget(label)

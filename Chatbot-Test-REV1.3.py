@@ -112,6 +112,7 @@ def get_openai_response(message, grounding_data, callback):
     전문적인 톤으로 응답하고, 사용자의 질문에 대해 최대 3문장으로 답변해줘. 이모지 절대 쓰지마
     처음 1회만 안녕하세요!!멘트를 쓰고, 답변 끝에는 감사합니다!!를 써줘
     \n줄바꿈은 {grounding_data}에서 사용자 질문이 달라질 때마다 사용해주세요.
+    답변의 맨 마지막에만 "감사합니다"라는 멘트를 남겨줘
     유저 질문에 대한 답변은 이와 같습니다: {grounding_data}에 맞는 답변을 해주세요
     """
 
@@ -280,7 +281,7 @@ class CSChatScreen(Screen):
             size_hint_y=None,
             font_name=myfont,
             halign=align,
-            valign="middle",
+            valign="top",
             text_size=(self.width * 0.7, None),
             color=(0, 0, 0, 1),
         )

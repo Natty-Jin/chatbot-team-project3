@@ -21,7 +21,7 @@ import PyPDF2
 import sys
 import uuid
 import docx
-from kivy.uix.slider import Slider 
+from kivy.uix.slider import Slider
 
 # API KEY를 환경변수로 관리하기 위한 설정 파일
 from dotenv import load_dotenv
@@ -79,7 +79,9 @@ def submit_synthesis(bot_message, callback):
                 0,
             )
     except Exception as ex:
-        Clock.schedule_once(lambda dt: callback(f"Error: {str(ex)}"), 0)  # 예외 발생 시 'ex' 사용
+        Clock.schedule_once(
+            lambda dt: callback(f"Error: {str(ex)}"), 0
+        )  # 예외 발생 시 'ex' 사용
 
 
 # 음성 합성 결과 조회 함수
@@ -191,12 +193,14 @@ def get_openai_response(message, grounding_data, callback):
     }
 
     system_message = f"""
-    너는 고객 지원 챗봇 nepoiA야. 고객의 질문에 친절하고 명확하게 응답해줘야 해.
-    전문적인 톤으로 응답하고, 이모지 절대 쓰지마
-    처음대화를 제외하고 안녕하세요!!멘트를 쓰지마세요, 답변 끝에는 감사합니다!!를 써줘
+    너는 고객 지원 챗봇 nepoiA야. 고객의 질문에 친절하고 명확하게 응답해줘야 해줘요.
+    전문적인 톤으로 응답하고, 이모지 절대 쓰지마세요
+    처음대화를 제외하고 안녕하세요!!멘트를 쓰지마세요, 답변 끝에는 감사합니다!!를 써줘요
     \n줄바꿈은 {grounding_data}에서 사용자 질문이 달라질 때마다 사용해주세요.
     유저 질문에 대한 답변은 이와 같습니다: {grounding_data}에 맞는 답변을 해주세요
     챗봇의 답변은 반드시 간략하게 핵심만 설명해주세요. 2문장을 넘기지 말아주세요!!!!!!!!!
+    당신은 다국어가 무조건 가능한 챗봇입니다. 사용자가 외국인일 경우에 그에 맞는 답변을 주시면 감사할 것 같습니다.
+    
     """
 
     data = {
@@ -243,6 +247,7 @@ def get_openai_response(message, grounding_data, callback):
 class CSChatScreen(Screen):
     def __init__(self, **kwargs):
         super(CSChatScreen, self).__init__(**kwargs)
+
         # Grounding 데이터를 불러옴
         self.grounding_data = load_grounding_data_as_text("Chatbotgrounding-data")
 
@@ -310,6 +315,14 @@ class CSChatScreen(Screen):
 
         layout.add_widget(chat_layout)
         self.add_widget(layout)
+
+        # 초기 메시지 추가는 message_layout 초기화 후에 수행
+        self.add_message(
+            """안녕하세요! nepoiA 여러분!! 무엇을 도와드릴까요?? .....^ O ^......\n *질문 예시*: 비밀번호를 잊어버렸어요... 해킹당한 것 같아요 등등 \n *질문 예시*: QR코드가 인식되지 않습니다. 해결방법이 있나요?\n *질문 예시*: 보안은 어디서 재설정하나요?
+            """,
+            align="left",
+            icon_source="chatbot-icon/nepoiA.png",
+        )
 
     # _update_rect 메서드 추가
     def _update_rect(self, instance, value):
@@ -380,7 +393,7 @@ class CSChatScreen(Screen):
             video = Video(source=video_url)
 
             # 레이아웃 생성
-            layout = BoxLayout(orientation='vertical')
+            layout = BoxLayout(orientation="vertical")
 
             # 상단에 NepoiA CS 챗봇이라는 제목 추가 (폰트 적용)
             title_label = Label(
@@ -401,50 +414,55 @@ class CSChatScreen(Screen):
             controls_layout = BoxLayout(size_hint=(1, 0.1), padding=(10, 10, 10, 10))
 
             # 멈춤/재생 버튼
-            play_pause_button = Button(text="멈춤", size_hint=(0.3, 1), font_name=myfont)
+            play_pause_button = Button(
+                text="멈춤", size_hint=(0.3, 1), font_name=myfont
+            )
+
             def toggle_play_pause(instance):
-                if video.state == 'play':
-                    video.state = 'pause'
+                if video.state == "play":
+                    video.state = "pause"
                     play_pause_button.text = "재생"
                 else:
-                    video.state = 'play'
+                    video.state = "play"
                     play_pause_button.text = "멈춤"
+
             play_pause_button.bind(on_press=toggle_play_pause)
             controls_layout.add_widget(play_pause_button)
 
             # 음량 조절 슬라이더
             volume_slider = Slider(min=0, max=1, value=video.volume, size_hint=(0.6, 1))
-            volume_slider.bind(value=lambda instance, value: setattr(video, 'volume', value))
+            volume_slider.bind(
+                value=lambda instance, value: setattr(video, "volume", value)
+            )
             controls_layout.add_widget(volume_slider)
 
             # 닫기 버튼
             close_button = Button(text="닫기", size_hint=(0.1, 1), font_name=myfont)
+
             def close_popup(instance):
-                video.state = 'stop'
+                video.state = "stop"
                 popup.dismiss()
+
             close_button.bind(on_press=close_popup)
             controls_layout.add_widget(close_button)
 
             layout.add_widget(controls_layout)
 
-
             # 팝업 제목 설정 (본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다)
             popup = Popup(
-                title="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다",  
+                title="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다",
                 content=layout,
                 title_align="center",  # 중앙 정렬
                 title_font=myfont,  # 기본 폰트 적용
-                size_hint=(0.8, 0.8)
+                size_hint=(0.8, 0.8),
             )
             popup.open()
 
             # 팝업이 열리면 자동으로 재생 시작
-            video.state = 'play'
+            video.state = "play"
 
         else:
             self.add_message(f"Error fetching video: {video_url}", align="left")
-
-
 
     # 메시지 추가 함수 수정
     def add_message(self, message, align="left", icon_source=None):
@@ -462,13 +480,13 @@ class CSChatScreen(Screen):
             size_hint_y=None,
             font_name=myfont,
             halign=align,
-            valign="middle",
-            text_size=(self.width * 0.7, None),
+            valign="bottom",
+            text_size=(self.width * 0.7, None),  # 이 부분을 수정
             color=(0, 0, 0, 1),
         )
 
-        label.bind(texture_size=label.setter("size"))
-        label.bind(size=self._update_message_height)
+        # 추가로 텍스트 크기를 세로로 제한하고 텍스트 정렬을 적용합니다
+        label.bind(size=lambda inst, value: setattr(inst, "text_size", value))
 
         if align == "left":
             message_layout.add_widget(label)
