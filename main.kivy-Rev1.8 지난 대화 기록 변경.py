@@ -30,7 +30,7 @@ load_dotenv()
 
 endpoint = os.getenv('AZURE_OPEN_AI_END_POINT')
 deployment = os.getenv('AZURE_OPEN_AI_API_KEY')
-subscription_key = os.getenv('AZURE_OPEN_AI_DEPLOYMENT_NAME')
+Azureopenai_subscription_key = os.getenv('AZURE_OPEN_AI_DEPLOYMENT_NAME')
 
 
 # 변환된  폰트 등록
@@ -152,7 +152,7 @@ save_test_conversation(
 def get_openai_response(message, char_name, grounding_data, callback):
     headers = {
         "Content-Type": "application/json",
-        "api-key": subscription_key,
+        "api-key": Azureopenai_subscription_key,
     }
 
     # 그라운딩 데이터를 시스템 메시지로 포함
@@ -172,10 +172,12 @@ def get_openai_response(message, char_name, grounding_data, callback):
                         
                         "안녕", "뭐해", "나 심심해"등등의 인삿말로 시작하는 부분에 대해서 자연스럽게 친구처럼 이야기 해줘
                         ****
-                        챗봇이 콘텐츠 필터링을 할 때, 사용자 발언을 오해할 수 있는 경우를 예방하기 위해 각 분류별로 챗봇이 주의해야 할 예시를 제공하는 것은 매우 중요합니다. 특히 인종 차별이나 비속어로 오해할 수 있는 발언들이 적절하게 처리되어야 합니다. 여기서는 챗봇이 자주 오해할 수 있는 상황들을 각 필터링 범주별로 나열하겠습니다.
+                        챗봇이 콘텐츠 필터링을 할 때, 사용자 발언을 오해할 수 있는 경우를 예방하기 위해 각 분류별로 챗봇이 주의해야 할 예시를 제공하는 것은 매우 중요합니다.
+                        특히 인종 차별이나 비속어로 오해할 수 있는 발언들이 적절하게 처리되어야 합니다. 여기서는 챗봇이 자주 오해할 수 있는 상황들을 각 필터링 범주별로 나열하겠습니다.
 
                         1. 인종 차별(Hate)
-                        챗봇은 인종이나 문화와 관련된 질문을 차별로 오해하지 않도록 주의해야 합니다. 사용자가 인종에 대해 물을 때, 이는 단순한 호기심일 수 있으므로 이를 적절하게 응답할 수 있어야 합니다. 인종 차별이 아닌 질문을 잘 처리하도록 가이드할 필요가 있습니다.
+                        챗봇은 인종이나 문화와 관련된 질문을 차별로 오해하지 않도록 주의해야 합니다. 사용자가 인종에 대해 물을 때,
+                        이는 단순한 호기심일 수 있으므로 이를 적절하게 응답할 수 있어야 합니다. 인종 차별이 아닌 질문을 잘 처리하도록 가이드할 필요가 있습니다.
 
                         예시로 챗봇이 오해하면 안 되는 발언:
 
@@ -343,7 +345,7 @@ def get_openai_response(message, char_name, grounding_data, callback):
         ],
             "max_tokens": 4000,  # 응답 길이를 확장하기 위해 설정
             "temperature": 0.7,   # 응답의 창의성 조절 (필요에 따라 조정 가능)
-            "top_p":0.75,
+            "top_p":0.95,
             "frequency_penalty":0,
             "presence_penalty":0,
             "stop":None,

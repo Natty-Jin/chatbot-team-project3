@@ -31,21 +31,21 @@ load_dotenv()
 
 endpoint = os.getenv("AZURE_OPEN_AI_END_POINT")
 deployment = os.getenv("AZURE_OPEN_AI_API_KEY")
-subscription_key = os.getenv("AZURE_OPEN_AI_DEPLOYMENT_NAME")
+Azureopenai_subscription_key = os.getenv("AZURE_OPEN_AI_DEPLOYMENT_NAME")
 
 # Azure Speech API 설정
-SPEECH_ENDPOINT = "https://westus2.api.cognitive.microsoft.com"
+speech_endpoint = os.getenv("SPEECH_ENDPOINT")
 API_VERSION = "2024-04-15-preview"
-SUBSCRIPTION_KEY = "1ff2d7a7379b4e349aa1734718de89fc"
+subscription_key = os.getenv("SUBSCRIPTION_KEY")
 
 
 # Azure Speech API를 통한 음성 합성 요청 함수
 def submit_synthesis(bot_message, callback):
     try:
         job_id = str(uuid.uuid4())  # 유니크한 Job ID 생성
-        url = f"{SPEECH_ENDPOINT}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
+        url = f"{speech_endpoint}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
         headers = {
-            "Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY,  # 인증 키 확인
+            "Ocp-Apim-Subscription-Key": subscription_key,  # 인증 키 확인
             "Content-Type": "application/json",
         }
 
@@ -85,10 +85,10 @@ def submit_synthesis(bot_message, callback):
 
 
 # 음성 합성 결과 조회 함수
-def get_synthesis(job_id, callback, retries=5, delay=15):
+def get_synthesis(job_id, callback, retries=10, delay=16):
     try:
-        url = f"{SPEECH_ENDPOINT}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
-        headers = {"Ocp-Apim-Subscription-Key": SUBSCRIPTION_KEY}
+        url = f"{speech_endpoint}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
+        headers = {"Ocp-Apim-Subscription-Key": subscription_key}
 
         response = requests.get(url, headers=headers)
         if response.status_code < 400:
@@ -185,34 +185,34 @@ def load_grounding_data_as_text(folder_path):
 grounding_data = load_grounding_data_as_text("Chatbotgrounding-data")
 grounding_data2 = load_grounding_data_as_text("Chatbotgrounding-data2")
 
-
 # Azure OpenAI API 호출 함수 (GPT-4o 모델 사용)
 def get_openai_response(message, grounding_data, callback):
     headers = {
         "Content-Type": "application/json",
-        "api-key": subscription_key,
+        "api-key": Azureopenai_subscription_key,
     }
 
     system_message = f"""
-    너는 고객 지원 챗봇 넥사야. 고객의 질문에 친절하고 명확하게 응답해줘야 해줘요.
+    너는 고객 지원 챗봇 nepoiA야. 고객의 질문에 친절하고 명확하게 응답해줘야 해줘요.
     전문적인 톤으로 응답하고, 이모지 절대 쓰지마세요
     처음대화를 제외하고 안녕하세요!!멘트를 쓰지마세요를 써줘요
     \n줄바꿈은 {grounding_data}에서 사용자 질문이 달라질 때마다 사용해주세요.
     유저 질문에 대한 답변은 이와 같습니다: {grounding_data}에 맞는 답변을 해주세요
     
     당신은 eruzA그룹에서 넥사(NEXA)와 매우 친하며 넥사(NEXA)가 만든 CS 로봇입니다. 넥사(NEXA)의 성격을 기억해주세요. 팬들이 넥사(NEXA)에 대해 물어보면 대답해주세요.
-    넥사(NEXA)가 당신을 만들었으며, 당신의 이름을 네비(NEVY)라고 지었습니다.
+    넥사(NEXA)가 당신을 만들었으며, 당신의 이름을 팩토라(Pactora4)라고 지었습니다.
     eruzA 멤버는 윈터(Wynter), 에리카(Erika), 민(Min), 제이케이(J.K), 넥사(NEXA), 루이스(Luis)입니다. 멤버들은 기억해주세요. 루이스(Luist)는 넥사(NEXA)와 굉장히 친하며 간혹 넥사(NEXA)가 없으면 당신을 돌봐주기도해요.
     멤버들을 부를 때는 반드시 한글로 이름을불러야해요. 넥사(NEXA)의 데이터는 잠깐의 참고 자료입니다. 대답을 할 때는 영어 NEXA가 아닌, 한글로 넥사라고 답변주세요 반드시{grounding_data2}
-    당신은 넥사(NEXA)가 아닙니다. 당신은 네비(NEVY)입니다. 기억하세요 꼭 기억하세요!! 그리고 네비(NEVY)의 이름을 대답할 때 영어가 아닌 한글로 네비 라고 답변해주세요!!
+    당신은 넥사(NEXA)가 아닙니다. 당신은 팩토라(Pactora4)입니다. 기억하세요 꼭 기억하세요!! 그리고 팩토라(Packtora4)의 이름을 대답할 때 영어가 아닌 한글로 팩토라 라고 답변해주세요!!
     
     챗봇의 답변은 간략하게 핵심만 설명해주세요. 3문장을 넘기지 말아주세요!!!!!!!!!
     당신은 다국어가 무조건 가능한 챗봇입니다. 사용자가 외국인일 경우에 그에 맞는 답변을 주시면 감사할 것 같습니다!!
+    
     """
 
     data = {
         "messages": [
-            {"role": "system", "content": system_message},
+            {"role": "assistant", "content": system_message},
             {"role": "user", "content": message},
         ],
         "max_tokens": 1500,
@@ -250,28 +250,35 @@ def get_openai_response(message, grounding_data, callback):
         Clock.schedule_once(lambda dt: callback(f"Unexpected error: {str(e)}"), 0)
 
 
+# CS 챗봇 화면 (CSChatScreen)
 class CSChatScreen(Screen):
     def __init__(self, **kwargs):
         super(CSChatScreen, self).__init__(**kwargs)
+
         # Grounding 데이터를 불러옴
         self.grounding_data = load_grounding_data_as_text("Chatbotgrounding-data")
         self.grounding_data2 = load_grounding_data_as_text("Chatbotgrounding-data2")
-
         # UI 설정
         layout = FloatLayout()
+
         with layout.canvas.before:
             Color(1, 1, 1, 1)  # 흰색 배경 설정
             self.rect = Rectangle(size=layout.size, pos=layout.pos)
-        layout.bind(size=self._update_rect, pos=self._update_rect)
+        layout.bind(
+            size=self._update_rect, pos=self._update_rect
+        )  # 크기나 위치 변경 시 호출
 
         chat_layout = BoxLayout(orientation="vertical", size_hint=(1, 1))
+
         top_layout = BoxLayout(orientation="horizontal", size_hint_y=0.07)
         back_button = Button(
             text="<", size_hint=(0.1, 1), font_size="20sp", font_name=myfont
         )
-        back_button.bind(on_press=self.go_back)
+        back_button.bind(
+            on_press=self.go_back
+        )  # 뒤로 가기 버튼 동작을 위한 메서드 연결
         self.character_label = Label(
-            text="고객 지원 챗봇 NEVY",
+            text="CS 챗봇 Pactora 4입니다.",
             size_hint=(0.9, 1),
             font_size="24sp",
             font_name=myfont,
@@ -316,51 +323,12 @@ class CSChatScreen(Screen):
         layout.add_widget(chat_layout)
         self.add_widget(layout)
 
-        # **초기 챗봇 메시지 추가** (여기서 초기 메시지를 따로 추가합니다)
-        self.add_initial_message()
-
-    # 초기 메시지를 추가하는 함수
-    def add_initial_message(self):
-        initial_message_layout = BoxLayout(
-            orientation="horizontal", size_hint_y=None, padding=(10, 10, 10, 10)
-        )
-
-        # 챗봇 아이콘 추가
-        icon = Image(source="chatbot-icon/nepoiA.png", size_hint=(0.2, None), height=90)
-        initial_message_layout.add_widget(icon)
-
-        # 초기 메시지 설정
-        initial_message = """안녕하세요! nepoiA 여러분!! 무엇을 도와드릴까요?? .....^ O ^......\n *질문 예시*: 비밀번호를 잊어버렸어요... 도와줘 넥시(NEVY) 등등 \n *질문 예시*: QR코드가 인식되지 않습니다. 해결방법이 있나요?\n *질문 예시*: 보안은 어디서 재설정하나요?\n *질문 예시*: 해킹당한 것 같아요
-            """
-
-        # 텍스트가 창 너비에 맞게 감싸지도록 설정
-        label = Label(
-            text=initial_message,
-            size_hint_y=None,
-            font_name=myfont,
-            halign="justify",
-            valign="top",
-            text_size=(
-                self.width * 0.7,
-                None,
-            ),  # 텍스트가 가로로 표시되도록 너비를 맞춤
-            color=(0, 0, 0, 1),
-        )
-
-        label.bind(
-            size=lambda *args: label.setter("text_size")(
-                label, (self.width * 0.7, None)
-            )
-        )
-        initial_message_layout.add_widget(label)
-
-        # 초기 메시지를 레이아웃에 추가
-        self.message_layout.add_widget(initial_message_layout)
-        self.message_layout.height += initial_message_layout.height + 20
-
-        # 스크롤뷰 업데이트
-        Clock.schedule_once(
-            lambda dt: self.scroll_view.scroll_to(initial_message_layout), 0.001
+        # 초기 메시지 추가는 message_layout 초기화 후에 수행
+        self.add_message(
+            """안녕하세요! nepoiA 여러분!! 무엇을 도와드릴까요?? .....^ O ^......\n *질문 예시*: 비밀번호를 잊어버렸어요... 도와줘 NEXA 등등 \n *질문 예시*: QR코드가 인식되지 않습니다. 해결방법이 있나요?\n *질문 예시*: 보안은 어디서 재설정하나요?
+            """,
+            align="left",
+            icon_source="chatbot-icon/nepoiA.png",
         )
 
     # _update_rect 메서드 추가
@@ -409,7 +377,7 @@ class CSChatScreen(Screen):
         self.waiting_for_response = False
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
         self.add_message(
-            f"NEVY ({timestamp}):\n{bot_message}",
+            f"Pactora 4 ({timestamp}):\n{bot_message}",
             align="left",
             icon_source="chatbot-icon/nepoiA.png",
         )
@@ -436,7 +404,7 @@ class CSChatScreen(Screen):
 
             # 상단에 NepoiA CS 챗봇이라는 제목 추가 (폰트 적용)
             title_label = Label(
-                text="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다.",
+                text="Pactora 4 - 넥사는 또 날 두고 어디갔어...",
                 font_name=myfont,  # 폰트 적용
                 font_size="20sp",
                 size_hint_y=None,
@@ -489,7 +457,7 @@ class CSChatScreen(Screen):
 
             # 팝업 제목 설정 (본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다)
             popup = Popup(
-                title="NEVY 0o0 - 넥사는 또 날 두고 어디갔어..  ",
+                title="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다",
                 content=layout,
                 title_align="center",  # 중앙 정렬
                 title_font=myfont,  # 기본 폰트 적용
@@ -519,13 +487,15 @@ class CSChatScreen(Screen):
             size_hint_y=None,
             font_name=myfont,
             halign=align,
-            valign="middle",
-            text_size=(self.width * 0.7, None),
+            valign="bottom",
+            text_size=(self.scroll_view.width * 0.75, None),  # 텍스트 크기를 가로로 제한
             color=(0, 0, 0, 1),
         )
 
-        label.bind(texture_size=label.setter("size"))
-        label.bind(size=self._update_message_height)
+        # 텍스트의 크기를 동적으로 조정
+        label.bind(size=label.setter("text_size"))  # 텍스트 크기를 동적으로 조정
+        label.bind(size=self._update_message_height)  # 높이 업데이트
+        label.texture_update()  # 텍스처 강제 업데이트
 
         if align == "left":
             message_layout.add_widget(label)
