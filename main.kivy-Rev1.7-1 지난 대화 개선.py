@@ -293,8 +293,8 @@ def get_openai_response(message, char_name, grounding_data, callback):
         "max_tokens": 4000,  # 응답 길이를 확장하기 위해 설정
         "temperature": 0.7,  # 응답의 창의성 조절 (필요에 따라 조정 가능)
         "top_p": 0.75,
-        "frequency_penalty": 0,
-        "presence_penalty": 0,
+        "frequency_penalty": 0.43,
+        "presence_penalty": 1.22,
         "stop": None,
         "stream": False,
     }

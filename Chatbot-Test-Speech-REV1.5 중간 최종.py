@@ -85,7 +85,7 @@ def submit_synthesis(bot_message, callback):
 
 
 # 음성 합성 결과 조회 함수
-def get_synthesis(job_id, callback, retries=5, delay=15):
+def get_synthesis(job_id, callback, retries=10, delay=16):
     try:
         url = f"{speech_endpoint}/avatar/batchsyntheses/{job_id}?api-version={API_VERSION}"
         headers = {"Ocp-Apim-Subscription-Key": subscription_key}
@@ -185,6 +185,7 @@ def load_grounding_data_as_text(folder_path):
 grounding_data = load_grounding_data_as_text("Chatbotgrounding-data")
 grounding_data2 = load_grounding_data_as_text("Chatbotgrounding-data2")
 
+
 # Azure OpenAI API 호출 함수 (GPT-4o 모델 사용)
 def get_openai_response(message, grounding_data, callback):
     headers = {
@@ -193,21 +194,20 @@ def get_openai_response(message, grounding_data, callback):
     }
 
     system_message = f"""
-    너는 고객 지원 챗봇 nepoiA야. 고객의 질문에 친절하고 명확하게 응답해줘야 해줘요.
+    너는 고객 지원 챗봇 네비야. 고객의 질문에 친절하고 명확하게 응답해줘야 해줘요.
     전문적인 톤으로 응답하고, 이모지 절대 쓰지마세요
     처음대화를 제외하고 안녕하세요!!멘트를 쓰지마세요를 써줘요
     \n줄바꿈은 {grounding_data}에서 사용자 질문이 달라질 때마다 사용해주세요.
     유저 질문에 대한 답변은 이와 같습니다: {grounding_data}에 맞는 답변을 해주세요
     
     당신은 eruzA그룹에서 넥사(NEXA)와 매우 친하며 넥사(NEXA)가 만든 CS 로봇입니다. 넥사(NEXA)의 성격을 기억해주세요. 팬들이 넥사(NEXA)에 대해 물어보면 대답해주세요.
-    넥사(NEXA)가 당신을 만들었으며, 당신의 이름을 팩토라(Pactora4)라고 지었습니다.
+    넥사(NEXA)가 당신을 만들었으며, 당신의 이름을 네비(NEVY)라고 지었습니다.
     eruzA 멤버는 윈터(Wynter), 에리카(Erika), 민(Min), 제이케이(J.K), 넥사(NEXA), 루이스(Luis)입니다. 멤버들은 기억해주세요. 루이스(Luist)는 넥사(NEXA)와 굉장히 친하며 간혹 넥사(NEXA)가 없으면 당신을 돌봐주기도해요.
     멤버들을 부를 때는 반드시 한글로 이름을불러야해요. 넥사(NEXA)의 데이터는 잠깐의 참고 자료입니다. 대답을 할 때는 영어 NEXA가 아닌, 한글로 넥사라고 답변주세요 반드시{grounding_data2}
-    당신은 넥사(NEXA)가 아닙니다. 당신은 팩토라(Pactora4)입니다. 기억하세요 꼭 기억하세요!! 그리고 팩토라(Pactora4)의 이름을 대답할 때 영어가 아닌 한글로 팩토라 라고 답변해주세요!!
+    당신은 넥사(NEXA)가 아닙니다. 당신은 네비(NEVY)입니다. 기억하세요 꼭 기억하세요!! 그리고 네비(NEVY)의 이름을 대답할 때 영어가 아닌 한글로 네비 라고 답변해주세요!!
     
     챗봇의 답변은 간략하게 핵심만 설명해주세요. 3문장을 넘기지 말아주세요!!!!!!!!!
     당신은 다국어가 무조건 가능한 챗봇입니다. 사용자가 외국인일 경우에 그에 맞는 답변을 주시면 감사할 것 같습니다!!
-    
     """
 
     data = {
@@ -278,7 +278,7 @@ class CSChatScreen(Screen):
             on_press=self.go_back
         )  # 뒤로 가기 버튼 동작을 위한 메서드 연결
         self.character_label = Label(
-            text="CS 챗봇 Pactora 4입니다.",
+            text="고객 지원 챗봇 NEVY",
             size_hint=(0.9, 1),
             font_size="24sp",
             font_name=myfont,
@@ -323,51 +323,12 @@ class CSChatScreen(Screen):
         layout.add_widget(chat_layout)
         self.add_widget(layout)
 
-        # **초기 챗봇 메시지 추가** (여기서 초기 메시지를 따로 추가합니다)
-        self.add_initial_message()
-
-    # 초기 메시지를 추가하는 함수
-    def add_initial_message(self):
-        initial_message_layout = BoxLayout(
-            orientation="horizontal", size_hint_y=None, padding=(10, 10, 10, 10)
-        )
-
-        # 챗봇 아이콘 추가
-        icon = Image(source="chatbot-icon/nepoiA.png", size_hint=(0.2, None), height=90)
-        initial_message_layout.add_widget(icon)
-
-        # 초기 메시지 설정
-        initial_message = """안녕하세요! nepoiA 여러분!! 무엇을 도와드릴까요?? .....^ O ^......\n *질문 예시*: 비밀번호를 잊어버렸어요... 도와줘 NEXA 등등 \n *질문 예시*: QR코드가 인식되지 않습니다. 해결방법이 있나요?\n *질문 예시*: 보안은 어디서 재설정하나요?
-            """
-
-        # 텍스트가 창 너비에 맞게 감싸지도록 설정
-        label = Label(
-            text=initial_message,
-            size_hint_y=None,
-            font_name=myfont,
-            halign="left",
-            valign="top",
-            text_size=(
-                self.width * 0.7,
-                None,
-            ),  # 텍스트가 가로로 표시되도록 너비를 맞춤
-            color=(0, 0, 0, 1),
-        )
-
-        label.bind(
-            size=lambda *args: label.setter("text_size")(
-                label, (self.width * 0.7, None)
-            )
-        )
-        initial_message_layout.add_widget(label)
-
-        # 초기 메시지를 레이아웃에 추가
-        self.message_layout.add_widget(initial_message_layout)
-        self.message_layout.height += initial_message_layout.height + 20
-
-        # 스크롤뷰 업데이트
-        Clock.schedule_once(
-            lambda dt: self.scroll_view.scroll_to(initial_message_layout), 0.001
+        # 초기 메시지 추가는 message_layout 초기화 후에 수행
+        self.add_message(
+            """안녕하세요! nepoiA 여러분!! 무엇을 도와드릴까요?? .....^ O ^......\n *질문 예시*: 비밀번호를 잊어버렸어요... 도와줘 NEXA 등등 \n *질문 예시*: QR코드가 인식되지 않습니다. 해결방법이 있나요?\n *질문 예시*: 보안은 어디서 재설정하나요?
+            """,
+            align="left",
+            icon_source="chatbot-icon/nepoiA.png",
         )
 
     # _update_rect 메서드 추가
@@ -416,7 +377,7 @@ class CSChatScreen(Screen):
         self.waiting_for_response = False
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d - %H:%M:%S")
         self.add_message(
-            f"Pactora 4 ({timestamp}):\n{bot_message}",
+            f"NEVY ({timestamp}):\n{bot_message}",
             align="left",
             icon_source="chatbot-icon/nepoiA.png",
         )
@@ -443,7 +404,7 @@ class CSChatScreen(Screen):
 
             # 상단에 NepoiA CS 챗봇이라는 제목 추가 (폰트 적용)
             title_label = Label(
-                text="Pactora 4 - 넥사는 또 날 두고 어디갔어...",
+                text="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다",
                 font_name=myfont,  # 폰트 적용
                 font_size="20sp",
                 size_hint_y=None,
@@ -496,7 +457,7 @@ class CSChatScreen(Screen):
 
             # 팝업 제목 설정 (본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다)
             popup = Popup(
-                title="본 영상은 AI 합성 음성입니다. 시청해주셔서 감사합니다",
+                title="NEVY - 넥사는 또 날 두고 어디갔어... 0o0",
                 content=layout,
                 title_align="center",  # 중앙 정렬
                 title_font=myfont,  # 기본 폰트 적용
@@ -513,7 +474,7 @@ class CSChatScreen(Screen):
     # 메시지 추가 함수 수정
     def add_message(self, message, align="left", icon_source=None):
         message_layout = BoxLayout(
-            orientation="horizontal", size_hint_y=None, padding=(10, 10, 1, 10)
+            orientation="horizontal", size_hint_y=None, padding=(2, 10, 1, 10)
         )
 
         if icon_source:
@@ -527,12 +488,17 @@ class CSChatScreen(Screen):
             font_name=myfont,
             halign=align,
             valign="bottom",
-            text_size=(self.width * 0.7, None),  # 이 부분을 수정
+            text_size=(
+                self.scroll_view.width * 0.75,
+                None,
+            ),  # 텍스트 크기를 가로로 제한
             color=(0, 0, 0, 1),
         )
 
-        label.bind(texture_size=label.setter("size"))
-        label.bind(size=self._update_message_height)
+        # 텍스트의 크기를 동적으로 조정
+        label.bind(size=label.setter("text_size"))  # 텍스트 크기를 동적으로 조정
+        label.bind(size=self._update_message_height)  # 높이 업데이트
+        label.texture_update()  # 텍스처 강제 업데이트
 
         if align == "left":
             message_layout.add_widget(label)

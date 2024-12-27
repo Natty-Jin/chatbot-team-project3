@@ -218,8 +218,8 @@ def get_openai_response(message, grounding_data, callback):
         "max_tokens": 1500,
         "temperature": 0.7,
         "top_p": 0.75,
-        "frequency_penalty": 0,
-        "presence_penalty": 0,
+        "frequency_penalty": 0.43,
+        "presence_penalty": 1.22,
         "stop": None,
         "stream": False,
     }

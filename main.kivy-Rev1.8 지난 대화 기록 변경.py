@@ -28,9 +28,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-endpoint = os.getenv('AZURE_OPEN_AI_END_POINT')
-deployment = os.getenv('AZURE_OPEN_AI_API_KEY')
-Azureopenai_subscription_key = os.getenv('AZURE_OPEN_AI_DEPLOYMENT_NAME')
+endpoint = os.getenv("AZURE_OPEN_AI_END_POINT")
+deployment = os.getenv("AZURE_OPEN_AI_API_KEY")
+Azureopenai_subscription_key = os.getenv("AZURE_OPEN_AI_DEPLOYMENT_NAME")
 
 
 # 변환된  폰트 등록
@@ -343,13 +343,13 @@ def get_openai_response(message, char_name, grounding_data, callback):
             },
             {"role": "user", "content": message},
         ],
-            "max_tokens": 4000,  # 응답 길이를 확장하기 위해 설정
-            "temperature": 0.7,   # 응답의 창의성 조절 (필요에 따라 조정 가능)
-            "top_p":0.95,
-            "frequency_penalty":0,
-            "presence_penalty":0,
-            "stop":None,
-            "stream":False,
+        "max_tokens": 4000,  # 응답 길이를 확장하기 위해 설정
+        "temperature": 0.7,  # 응답의 창의성 조절 (필요에 따라 조정 가능)
+        "top_p": 0.95,
+        "frequency_penalty": 0.43,
+        "presence_penalty": 1.22,
+        "stop": None,
+        "stream": False,
     }
 
     url = f"{endpoint}openai/deployments/{deployment}/chat/completions?api-version=2024-05-01-preview"
@@ -857,7 +857,6 @@ class ChatScreen(Screen):
         save_conversation(
             self.current_character, self.chat_history[self.current_character]
         )
-
 
     def add_message(self, message, align="left", icon_source=None):
         message_layout = BoxLayout(
