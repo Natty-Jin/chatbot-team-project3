@@ -18,11 +18,12 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 ## 주요 기능
 
 1. AI 대화 생성 (Auzre Service GPT-4o): 사용자의 입력에 대한 AI 응답 생성
+   
 ![스크린샷 2024-10-18 163128](https://github.com/user-attachments/assets/508a98bc-e936-4d05-8837-c41d69aa2d05)
    
-- 통합앱 내부 사진
+  - 통합앱 내부 사진
      
- - ![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
+      ![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
 
 2. 텍스트-음성 변환(Azure TTS) SSML형식: 텍스트 답변을 음성으로 변환
  
