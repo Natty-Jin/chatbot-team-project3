@@ -71,10 +71,10 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 - 검색 및 벡터 데이터베이스: Azure Cognitive Search
 - Azure Cognitive Services - Text Analytics: 감성 분석(Sentiment Analysis), 키워드 추출 등을 활용한 위험성 평가
 - RAG (Retrieval-Augmented Generation) 시스템
- - Azure AI Search를 활용한 벡터 인덱싱
- - Azure OpenAI GPT-4o와 연동하여 인덱싱된 페르소나 데이터를 검색 및 활용
+   - Azure AI Search를 활용한 벡터 인덱싱
+   - Azure OpenAI GPT-4o와 연동하여 인덱싱된 페르소나 데이터를 검색 및 활용
 - 데이터 저장소 및 인덱싱
- - Azure Blob Storage에 JSON, PDF, DOCX 등의 페르소나 데이터 저장 및 자동 인덱싱
+   - Azure Blob Storage에 JSON, PDF, DOCX 등의 페르소나 데이터 저장 및 자동 인덱싱
 
 ### 배포 및 운영
 
