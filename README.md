@@ -18,23 +18,23 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 ## 주요 기능
 
 1. AI 대화 생성 (Auzre Service GPT-4o): 사용자의 입력에 대한 AI 응답 생성
-   ![스크린샷 2024-10-18 163128](https://github.com/user-attachments/assets/508a98bc-e936-4d05-8837-c41d69aa2d05)
+![스크린샷 2024-10-18 163128](https://github.com/user-attachments/assets/508a98bc-e936-4d05-8837-c41d69aa2d05)
    
-   - 통합앱 내부 사진
+- 통합앱 내부 사진
      
-   ![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
+![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
 
 2. 텍스트-음성 변환(Azure TTS) SSML형식: 텍스트 답변을 음성으로 변환
  
- ![스크린샷 2024-10-25 150749](https://github.com/user-attachments/assets/a5b78e07-da8a-4704-a0ec-717e1e1d377c)
+![스크린샷 2024-10-25 150749](https://github.com/user-attachments/assets/a5b78e07-da8a-4704-a0ec-717e1e1d377c)
 
-4. 텍스트-음성 아바타(Azure 3D Avatar): 아나운서 타입의 한국어 지원가능 캐릭터가 팝업 형식으로 나타나 AI 음성을 생성
+3. 텍스트-음성 아바타(Azure 3D Avatar): 아나운서 타입의 한국어 지원가능 캐릭터가 팝업 형식으로 나타나 AI 음성을 생성
  
-  ![스크린샷 2024-10-25 160644](https://github.com/user-attachments/assets/da134c0f-488c-49d9-8261-4e340d9a6ad6)
+![스크린샷 2024-10-25 160644](https://github.com/user-attachments/assets/da134c0f-488c-49d9-8261-4e340d9a6ad6)
 
-6. 컨텐츠 필터링(Microsoft AI 6대 윤리원칙 기준 적용): 악의적인 사용자가 성적발언,욕설, 불법, 인종차별, 가상 답변(할루시네이션), Jail break 막기 위함
+4. 컨텐츠 필터링(Microsoft AI 6대 윤리원칙 기준 적용): 악의적인 사용자가 성적발언,욕설, 불법, 인종차별, 가상 답변(할루시네이션), Jail break 막기 위함
 
-  ![스크린샷 2024-10-24 235930](https://github.com/user-attachments/assets/9f3efa1c-a375-4e53-8881-20941b11168e)
+![스크린샷 2024-10-24 235930](https://github.com/user-attachments/assets/9f3efa1c-a375-4e53-8881-20941b11168e)
 
 
 ## 설치 방법
@@ -50,8 +50,7 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
    - AZURE_OPEN_AI_API_KEY
    - AZURE_OPEN_AI_DEPLOYMENT_NAME
    - SPEECH_ENDPOINT
-   - SUBSCRIPTION_KEY
-   
+   - SUBSCRIPTION_KEY   
 
 ## 사용 방법
 
@@ -62,13 +61,14 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
    - 버츄얼 아이돌의 라이브 팬미팅 때 했던 이야기를 주고 받으며 이야기를 이어나간다.
 3. 'Chatbot-Test-Speech-REV1.6 최종버전.py'파일을 열어 실행합니다.
    - 챗봇과 대화를 하기 위한 문의사항을 남깁니다.
-     
-     - ![image](https://github.com/user-attachments/assets/f6d33dc0-bded-475d-b089-ab584b7ab959)
-       
    - CS chatbot은 다운로드 받은 어플리케이션을 탈퇴하는 방법 또는 에러 현상에 대해 문의하면 답변을 받을 수 있습니다.
+
+![image](https://github.com/user-attachments/assets/f6d33dc0-bded-475d-b089-ab584b7ab959)
+      
    - CS Chatbot에게 질문 후, 10초 내외로 3D Avatar가 생성되며 chatbot의 답변을 읽어줍니다.
      
-     - ![스크린샷 2024-10-25 160644](https://github.com/user-attachments/assets/da134c0f-488c-49d9-8261-4e340d9a6ad6)
+![스크린샷 2024-10-25 160644](https://github.com/user-attachments/assets/da134c0f-488c-49d9-8261-4e340d9a6ad6)
+
 
 ## 주의사항
 
