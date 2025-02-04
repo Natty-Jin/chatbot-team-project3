@@ -25,15 +25,18 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
      
       ![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
 
-2. 텍스트-음성 변환(Azure TTS) SSML형식: 텍스트 답변을 음성으로 변환
+2. 텍스트-음성 변환(Azure TTS)
+   - SSML형식: 텍스트 답변을 음성으로 변환
  
 ![스크린샷 2024-10-25 150749](https://github.com/user-attachments/assets/a5b78e07-da8a-4704-a0ec-717e1e1d377c)
 
-3. 텍스트-음성 아바타(Azure 3D Avatar): 아나운서 타입의 한국어 지원가능 캐릭터가 팝업 형식으로 나타나 AI 음성을 생성
+3. 텍스트-음성 아바타(Azure 3D Avatar):
+   - 아나운서 타입의 한국어 지원가능 캐릭터가 팝업 형식으로 나타나 AI 음성을 생성
  
 ![스크린샷 2024-10-25 160644](https://github.com/user-attachments/assets/da134c0f-488c-49d9-8261-4e340d9a6ad6)
 
-4. 컨텐츠 필터링(Microsoft AI 6대 윤리원칙 기준 적용): 악의적인 사용자가 성적발언,욕설, 불법, 인종차별, 가상 답변(할루시네이션), Jail break 막기 위함
+4. 컨텐츠 필터링(Microsoft AI 6대 윤리원칙 기준 적용):
+   - 악의적인 사용자가 성적발언,욕설, 불법, 인종차별, 가상 답변(할루시네이션), Jail break 막기 위함
 
 ![스크린샷 2024-10-24 235930](https://github.com/user-attachments/assets/9f3efa1c-a375-4e53-8881-20941b11168e)
 
