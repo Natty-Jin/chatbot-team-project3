@@ -36,7 +36,7 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 ![스크린샷 2024-10-25 160644](https://github.com/user-attachments/assets/da134c0f-488c-49d9-8261-4e340d9a6ad6)
 
 4. 컨텐츠 필터링(Microsoft AI 6대 윤리원칙 기준 적용):
-   - 악의적인 사용자가 성적발언,욕설, 불법, 인종차별, 가상 답변(할루시네이션), Jail break 막기 위함
+   - 사용자가 성적발언,욕설, 불법, 인종차별, 가상 답변(할루시네이션), Jail break 행위 막기 위함
 
 ![스크린샷 2024-10-24 235930](https://github.com/user-attachments/assets/9f3efa1c-a375-4e53-8881-20941b11168e)
 
@@ -54,7 +54,32 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
    - AZURE_OPEN_AI_API_KEY
    - AZURE_OPEN_AI_DEPLOYMENT_NAME
    - SPEECH_ENDPOINT
-   - SUBSCRIPTION_KEY   
+   - SUBSCRIPTION_KEY
+
+## 기술스택, 개발 환경
+
+- 언어: Python
+- 라이브러리: Kivy
+- IDE: Visual Studio Code
+- 클라우드 서비스: Azure OpenAI, Azure App Service, Azure Storage
+
+![스크린샷 2025-02-04 181912](https://github.com/user-attachments/assets/9db24a1c-65a1-447a-b5cc-35ae12f00c69)
+
+ 
+### AI 및 데이터 처리
+- 모델: Azure OpenAI GPT-4o
+- 검색 및 벡터 데이터베이스: Azure Cognitive Search
+- Azure Cognitive Services - Text Analytics: 감성 분석(Sentiment Analysis), 키워드 추출 등을 활용한 위험성 평가
+- RAG (Retrieval-Augmented Generation) 시스템
+ - Azure AI Search를 활용한 벡터 인덱싱
+ - Azure OpenAI GPT-4o와 연동하여 인덱싱된 페르소나 데이터를 검색 및 활용
+- 데이터 저장소 및 인덱싱
+ - Azure Blob Storage에 JSON, PDF, DOCX 등의 페르소나 데이터 저장 및 자동 인덱싱
+
+### 배포 및 운영
+
+- 컨테이너 관리: Azure Container Instances, Azure Kubernetes Service (AKS)
+- CI/CD: GitHub Actions + Azure DevOps
 
 ## 사용 방법
 
