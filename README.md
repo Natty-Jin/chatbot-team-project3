@@ -75,6 +75,8 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
    - Azure OpenAI GPT-4o와 연동하여 인덱싱된 페르소나 데이터를 검색 및 활용
 - 데이터 저장소 및 인덱싱
    - Azure Blob Storage에 JSON, PDF, DOCX 등의 페르소나 데이터 저장 및 자동 인덱싱
+- 챗봇, 캐릭터(grounding-data): 페르소나 원천 파일
+- 3D Avatar 영상 경로: Visuzal Studio-video_url 설정
 
 ### 배포 및 운영
 
