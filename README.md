@@ -17,11 +17,9 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 
 ## 주요 기능
 
-1. AI 대화 생성 (Auzre Service GPT-4o): 사용자의 입력에 대한 AI 응답 생성
+1. AI 대화 생성 (Auzre Service GPT-4o): 사용자의 입력에 대한 AI 자동 응답 생성
    
-![스크린샷 2024-10-18 163128](https://github.com/user-attachments/assets/508a98bc-e936-4d05-8837-c41d69aa2d05)
-   
-  - 통합앱 내부 사진
+  - 통합앱 내부 캐릭터 사진
      
       ![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
 
@@ -87,10 +85,13 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 
 1. `main.kivy-Rev1.8 지난 대화 기록 변경.py` 파일을 열어 실행합니다.
 2. Kivy 프로그램이 실행될 때 6명의 캐릭터(Wynter, Erika, Min, J.K, Luis, Nexa)의 네모난 대화창을 누릅니다.
+
+![스크린샷 2024-10-18 163128](https://github.com/user-attachments/assets/508a98bc-e936-4d05-8837-c41d69aa2d05)
+
    - 성격, 하고싶은 것, 좋아하는 것에 대한 내용을 적는다.
    - 캐릭터가 답변을 주면, 대화를 이어 나간다.
    - 버츄얼 아이돌의 라이브 팬미팅 때 했던 이야기를 주고 받으며 이야기를 이어나간다.
-3. `Chatbot-Test-Speech-REV1.6 최종버전.py` 파일을 열어 실행합니다.
+4. `Chatbot-Test-Speech-REV1.6 최종버전.py` 파일을 열어 실행합니다.
    - 챗봇과 대화를 하기 위한 문의사항을 남깁니다.
    - CS chatbot은 다운로드 받은 어플리케이션을 탈퇴하는 방법 또는 에러 현상에 대해 문의하면 답변을 받을 수 있습니다.
 
