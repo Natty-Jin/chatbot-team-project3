@@ -22,7 +22,7 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
    
 - 통합앱 내부 사진
      
-![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
+ - ![image](https://github.com/user-attachments/assets/2aadc430-718d-4d65-a5bb-c5b0aeb70672)
 
 2. 텍스트-음성 변환(Azure TTS) SSML형식: 텍스트 답변을 음성으로 변환
  
@@ -43,7 +43,7 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
  ```
   pip install -r requirements.txt
  ```
-2. '.env' 파일을 생성하고 다음 환경 변수를 설정:
+2. `.env` 파일을 생성하고 다음 환경 변수를 설정:
    - AZURE_OPEN_AI_END_POINT
    - AZURE_OPENAI_ENDPOINT
    - AZURE_OPEN_AI_API_name
@@ -54,12 +54,12 @@ AI를 활용하여 재미 요소를 붙이고자, "버츄얼 아이돌"이라는
 
 ## 사용 방법
 
-1. 'main.kivy-Rev1.8 지난 대화 기록 변경.py' 파일을 열어 실행합니다.
+1. `main.kivy-Rev1.8 지난 대화 기록 변경.py` 파일을 열어 실행합니다.
 2. Kivy 프로그램이 실행될 때 6명의 캐릭터(Wynter, Erika, Min, J.K, Luis, Nexa)의 네모난 대화창을 누릅니다.
    - 성격, 하고싶은 것, 좋아하는 것에 대한 내용을 적는다.
    - 캐릭터가 답변을 주면, 대화를 이어 나간다.
    - 버츄얼 아이돌의 라이브 팬미팅 때 했던 이야기를 주고 받으며 이야기를 이어나간다.
-3. 'Chatbot-Test-Speech-REV1.6 최종버전.py' 파일을 열어 실행합니다.
+3. `Chatbot-Test-Speech-REV1.6 최종버전.py` 파일을 열어 실행합니다.
    - 챗봇과 대화를 하기 위한 문의사항을 남깁니다.
    - CS chatbot은 다운로드 받은 어플리케이션을 탈퇴하는 방법 또는 에러 현상에 대해 문의하면 답변을 받을 수 있습니다.
 
