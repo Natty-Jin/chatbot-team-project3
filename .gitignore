@@ -1,0 +1,16 @@
+# 환경 설정 파일 무시
+.env
+config.json
+
+# 캐시, 로그 파일 무시
+*.log
+*.cache
+__pycache__/
+
+# 가상환경 폴더 무시
+venv/
+.venv/
+
+# IDE 설정 파일 무시
+.vscode/
+.idea/
